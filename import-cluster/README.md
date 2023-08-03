@@ -45,7 +45,7 @@ options:
   -o <output_script_path>     [Optional] The file you want the import script to be written to. If not set,
                                          the script will generate a script file named from your clustername
                                          in ./scripts repository.
-
+  -k <kubeconfig>             [Optional] The kubeconfig file to be used when importing the remote cluster
 
 
 ```

@@ -48,6 +48,7 @@ Help()
    echo "  -o <output_script_path>     [Optional] The file you want the import script to be written to. If not set,"
    echo "                                         the script will generate a script file named from your clustername"
    echo "                                         in ./scripts repository."
+   echo "  -k <kubeconfig_file_path>   [Optional] The kubeconfig file to be used when importing the remote cluster"
    echo
 }
 
@@ -70,8 +71,8 @@ Log() #LogType #LogMessage
 
 SetOptions() #options $args
 {
-
-  while getopts $1 opt ${2}; do
+  
+  while getopts "$1": opt ${2}; do
     case $opt in
       c) CLUSTER_NAME="$OPTARG"
          ;;
@@ -80,6 +81,9 @@ SetOptions() #options $args
       o) SCRIPT_IMPORT_FILE="$OPTARG"
       ;;
       s) SCRIPT_IMPORT_FILE="/dev/stdout"
+      ;;
+      k) 
+        KUBE_CONFIG="$OPTARG"
       ;;
       \?) 
         Error "Invalid option -${OPTARG}."
@@ -167,6 +171,18 @@ ValidateOptions() #options
         fi
         ;;
 
+      k)
+        if [ -z $KUBE_CONFIG ]; then
+          KUBE_CONFIG=""
+          Log "Info" "No KubeConfig file has been provided, when importing the remote cluster, the current context will be used"
+        else
+          Log "Info" "TODO: We should validate KubeFile exist ...."
+          # echo $KUBE_CONFIG
+          KUBE_CONFIG="--kubeconfig '${KUBE_CONFIG}'"
+          # echo $KUBE_CONFIG
+        fi
+        ;;
+
       :|s) #SKIP
         ;;
 
@@ -190,10 +206,11 @@ ValidateIsClusterRunningACM()
 
 ReadCommand() #command
 {
+
   case $1 in
 
     import) # Import a cluster into ACM
-      SetOptions ":c:fso:" "${ARGS}"
+      SetOptions ":c:fso:k:" "${ARGS}"
       ValidateIsClusterRunningACM
       ImportCluster
       exit 0
@@ -216,7 +233,7 @@ ReadCommand() #command
       fi
 
       envsubst '$CLUSTER_NAME:$LABELS' < template.taml > $OP
-
+      
       exit 0
       ;;
     help)
@@ -248,6 +265,8 @@ ImportCluster()
   ERRNO=$(oc create -n ${CLUSTER_NAME} -f ${MANAGED_CLUSTER_FILE} > /dev/null 2>&1; echo $?)
   if [ $ERRNO -ne 0 ]; then
     Log "Warning" "An error occured while creating the resources in your current cluster. It usually means the resources already exists. Let's try fething the data anyways."
+    Log "Info" "Damping time 5 seconds for the ACM to generate the necessary data..."
+    sleep 5
   else
     Log "Info" "The cluster ${CLUSTER_NAME} should now be in 'Pending...' state in your ACM console."
     Log "Info" "Damping time 5 seconds for the ACM to generate the necessary data..."
@@ -285,7 +304,7 @@ ImportCluster()
   ### Add the warning message if CRDS already exist and wrapup by writting the import script.
   ###
   Log "Info" "Generating import script into ${SCRIPT_IMPORT_FILE} ..."
-  printf "#!/bin/sh\necho \"${CRDS}\" | base64 -d | kubectl create -f - || test \$? -eq 0 && sleep 2 && echo \"${IMPORT}\" | base64 -d | kubectl apply -f - || echo \"VGhlIGNsdXN0ZXIgY2Fubm90IGJlIGltcG9ydGVkIGJlY2F1c2UgaXRzIEtsdXN0ZXJsZXQgQ1JEIGFscmVhZHkgZXhpc3RzLgpFaXRoZXIgdGhlIGNsdXN0ZXIgd2FzIGFscmVhZHkgaW1wb3J0ZWQsIG9yIGl0IHdhcyBub3QgZGV0YWNoZWQgY29tcGxldGVseSBkdXJpbmcgYSBwcmV2aW91cyBkZXRhY2ggcHJvY2Vzcy4KRGV0YWNoIHRoZSBleGlzdGluZyBjbHVzdGVyIGJlZm9yZSB0cnlpbmcgdGhlIGltcG9ydCBhZ2Fpbi4=\" | base64 -d" > $SCRIPT_IMPORT_FILE
+  printf "#!/bin/sh\necho \"${CRDS}\" | base64 -d | kubectl create $KUBE_CONFIG -f - || test \$? -eq 0 && sleep 2 && echo \"${IMPORT}\" | base64 -d | kubectl apply $KUBE_CONFIG -f - || echo \"VGhlIGNsdXN0ZXIgY2Fubm90IGJlIGltcG9ydGVkIGJlY2F1c2UgaXRzIEtsdXN0ZXJsZXQgQ1JEIGFscmVhZHkgZXhpc3RzLgpFaXRoZXIgdGhlIGNsdXN0ZXIgd2FzIGFscmVhZHkgaW1wb3J0ZWQsIG9yIGl0IHdhcyBub3QgZGV0YWNoZWQgY29tcGxldGVseSBkdXJpbmcgYSBwcmV2aW91cyBkZXRhY2ggcHJvY2Vzcy4KRGV0YWNoIHRoZSBleGlzdGluZyBjbHVzdGVyIGJlZm9yZSB0cnlpbmcgdGhlIGltcG9ydCBhZ2Fpbi4=\" | base64 -d" > $SCRIPT_IMPORT_FILE
 
   if [ $SCRIPT_IMPORT_FILE = "/dev/stdout" ]; then
     Log "Info" "Printing the import script in stdout ..."
