@@ -253,7 +253,7 @@ ImportCluster()
   ### Create CLUSTER_NAME namespace to ship ManagedCluster and KlusterletAddonConfig in it, and retrive secrets from it
   ###
   Log "Info" "Create ${CLUSTER_NAME} namespace ..."
-  ERRNO=$(oc create namespace ${CLUSTER_NAME} > /dev/null 2>&1; echo $?)
+  ERRNO=$(oc create namespace ${CLUSTER_NAME} ${KUBE_CONFIG} > /dev/null 2>&1; echo $?)
   if [ $ERRNO -ne 0 ]; then
     Log "Warning" "An error occured while creating the namespace in your current cluster. It usually means the namespace already exists."
   fi
@@ -262,7 +262,7 @@ ImportCluster()
   ### Create ManagedCluster and KlusterletAddonConfig resources so ACM will wait for this cluster to reach out
   ###
   Log "Info" "Create ${CLUSTER_NAME} ManagedCluster and KlusterletAddonConfig resources using ${MANAGED_CLUSTER_FILE} ..."
-  ERRNO=$(oc create -n ${CLUSTER_NAME} -f ${MANAGED_CLUSTER_FILE} > /dev/null 2>&1; echo $?)
+  ERRNO=$(oc create -n ${CLUSTER_NAME} -f ${MANAGED_CLUSTER_FILE} ${KUBE_CONFIG} > /dev/null 2>&1; echo $?)
   if [ $ERRNO -ne 0 ]; then
     Log "Warning" "An error occured while creating the resources in your current cluster. It usually means the resources already exists. Let's try fething the data anyways."
     Log "Info" "Damping time 5 seconds for the ACM to generate the necessary data..."
@@ -277,7 +277,7 @@ ImportCluster()
   ### Get part of what is needed in the import script, the CRDS file, to be inject in the remote cluster
   ###
   Log "Info" "Extract CRDS data ..."
-  CRDS=$(oc get secret -n ${CLUSTER_NAME} ${CLUSTER_NAME}-import -o json 2>&1)
+  CRDS=$(oc get secret -n ${CLUSTER_NAME} ${CLUSTER_NAME}-import -o json ${KUBE_CONFIG} 2>&1)
   ERRNO=$(echo $?)
   if [ $ERRNO -ne 0 ]; then
     Log "Error" "An error occured while fetching CRDS data. Make sure the cluster you running the script againts is your HUB cluster, and not the cluster you want to import. If your current cluster is the HUB cluster, something else is preventing this script to perform OC command. They error was: [${CRDS}]"
@@ -290,7 +290,7 @@ ImportCluster()
   ### Get part of what is needed in the import script, the IMPORT file, to be inject in the remote cluster
   ###
   Log "Info" "Extract IMPORT data ..."
-  IMPORT=$(oc get secret -n ${CLUSTER_NAME} ${CLUSTER_NAME}-import -o json 2>&1)
+  IMPORT=$(oc get secret -n ${CLUSTER_NAME} ${CLUSTER_NAME}-import -o json ${KUBE_CONFIG} 2>&1)
   ERRNO=$(echo $?)
   if [ $ERRNO -ne 0 ]; then
     Log "Error" "An error occured while fetching IMPORT data. Make sure the cluster you running the script againts is your HUB cluster, and not the cluster you want to import. If your current cluster is the HUB cluster, something else is preventing this script to perform OC command. They error was: [${IMPORT}]"
