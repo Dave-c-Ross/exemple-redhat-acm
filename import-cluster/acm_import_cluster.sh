@@ -223,7 +223,7 @@ ReadCommand() #command
       exit 0
       ;;
     template) # Generate a template file for import or creation
-      SetOptions ":c:so:" "${ARGS}"
+      SetOptions ":c:so:k:" "${ARGS}"
       export CLUSTER_NAME
 
       if [ $SCRIPT_IMPORT_FILE = "/dev/stdout" ]; then
