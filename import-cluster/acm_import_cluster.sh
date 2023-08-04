@@ -210,7 +210,7 @@ ValidateOptions() #options
   done
 }
 
-ShowKuberneteContext() #kubeconfig file
+ShowKuberneteContext() #kubeconfig file (with --kubeconfig)
 {
   CURCONTX=$(oc config current-context $1 2>&1)
   ERRNO=$(echo $?)
