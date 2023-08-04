@@ -212,7 +212,7 @@ ValidateOptions() #options
 
 ShowKuberneteContext() #kubeconfig file
 {
-  CURCONTX=$(oc config current-context $1 ${HUB_KUBE_CONFIG} 2>&1)
+  CURCONTX=$(oc config current-context $1 2>&1)
   ERRNO=$(echo $?)
   if [ $ERRNO -ne 0 ]; then
     Log "Warning" "ERR ERR ERR"
