@@ -189,7 +189,7 @@ ValidateOptions() #options
           HUB_KUBE_CONFIG=""
           Log "Info" "No KubeConfig file has been provided for hub cluster, when importing the remote cluster, the current context will be used"
         else
-          Log "Info" "TODO: We should validate KubeFile exist ...."
+          Log "Info" "TODO: We should validate Cluster Hub KubeFile exist ...."
           # echo $HUB_KUBE_CONFIG
           HUB_KUBE_CONFIG="--kubeconfig '${HUB_KUBE_CONFIG}'"
           # echo $HUB_KUBE_CONFIG
@@ -210,8 +210,20 @@ ValidateOptions() #options
   done
 }
 
+ShowKuberneteContext() #kubeconfig file
+{
+  CURCONTX=$(oc config current-context $1 ${HUB_KUBE_CONFIG} 2>&1)
+  ERRNO=$(echo $?)
+  if [ $ERRNO -ne 0 ]; then
+    Log "Warning" "ERR ERR ERR"
+  else
+    Log "Info" "Current context is ${CURCONTX}"
+  fi
+}
+
 ValidateIsClusterRunningACM()
 {
+  ShowKuberneteContext ${HUB_KUBE_CONFIG}
   ERRNO=$(oc get subs -n open-cluster-management advanced-cluster-management ${HUB_KUBE_CONFIG} > /dev/null 2>&1; echo $?)
   if [ $ERRNO -ne 0 ]; then
     Error "Cluster is not running Red Hat Advanced Cluster Management for Kubernetes" "Make sure the cluster your kubeconfig is pointing to is your cluster hub running ACM." 6
