@@ -212,7 +212,7 @@ ValidateOptions() #options
 
 ShowKuberneteContext() #kubeconfig file (with --kubeconfig)
 {
-  CCC=$(cat $1)
+  CCC=$(cat ${HUB_KUBE_CONFIG})
   echo $CCC
   Log "Info" "oc config current-context $1"
   CURCONTX=$(oc config current-context $1)
