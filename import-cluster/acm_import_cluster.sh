@@ -192,7 +192,7 @@ ValidateOptions() #options
           Log "Info" "TODO: We should validate Cluster Hub KubeFile exist ...."
           # echo $HUB_KUBE_CONFIG
           HUB_KUBE_CONFIG="--kubeconfig '${HUB_KUBE_CONFIG}'"
-          # echo $HUB_KUBE_CONFIG
+          echo $HUB_KUBE_CONFIG
         fi
         ;;
         
@@ -224,7 +224,7 @@ ShowKuberneteContext() #kubeconfig file (with --kubeconfig)
 
 ValidateIsClusterRunningACM()
 {
-  ShowKuberneteContext ${HUB_KUBE_CONFIG}
+  ShowKuberneteContext "${HUB_KUBE_CONFIG}"
   ERRNO=$(oc get subs -n open-cluster-management advanced-cluster-management ${HUB_KUBE_CONFIG} > /dev/null 2>&1; echo $?)
   if [ $ERRNO -ne 0 ]; then
     Error "Cluster is not running Red Hat Advanced Cluster Management for Kubernetes" "Make sure the cluster your kubeconfig is pointing to is your cluster hub running ACM." 6
