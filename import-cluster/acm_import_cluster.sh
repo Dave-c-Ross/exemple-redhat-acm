@@ -48,7 +48,8 @@ Help()
    echo "  -o <output_script_path>     [Optional] The file you want the import script to be written to. If not set,"
    echo "                                         the script will generate a script file named from your clustername"
    echo "                                         in ./scripts repository."
-   echo "  -k <kubeconfig_file_path>   [Optional] The kubeconfig file to be used when importing the remote cluster"
+   echo "  -h <kubeconfig_file_path>   [Optional] The cluster hub kubeconfig file to be used when importing the remote cluster"
+   echo "  -k <kubeconfig_file_path>   [Optional] The remote cluster kubeconfig file to be used when importing the remote cluster"
    echo
 }
 
@@ -82,8 +83,9 @@ SetOptions() #options $args
       ;;
       s) SCRIPT_IMPORT_FILE="/dev/stdout"
       ;;
-      k) 
-        KUBE_CONFIG="$OPTARG"
+      k) KUBE_CONFIG="$OPTARG"
+      ;;
+      h) HUB_KUBE_CONFIG="$OPTARG"
       ;;
       \?) 
         Error "Invalid option -${OPTARG}."
@@ -182,6 +184,18 @@ ValidateOptions() #options
           # echo $KUBE_CONFIG
         fi
         ;;
+      h)
+        if [ -z $HUB_KUBE_CONFIG ]; then
+          HUB_KUBE_CONFIG=""
+          Log "Info" "No KubeConfig file has been provided for hub cluster, when importing the remote cluster, the current context will be used"
+        else
+          Log "Info" "TODO: We should validate KubeFile exist ...."
+          # echo $HUB_KUBE_CONFIG
+          HUB_KUBE_CONFIG="--kubeconfig '${HUB_KUBE_CONFIG}'"
+          # echo $HUB_KUBE_CONFIG
+        fi
+        ;;
+        
 
       :|s) #SKIP
         ;;
@@ -210,7 +224,7 @@ ReadCommand() #command
   case $1 in
 
     import) # Import a cluster into ACM
-      SetOptions ":c:fso:k:" "${ARGS}"
+      SetOptions ":c:fso:k:h:" "${ARGS}"
       ValidateIsClusterRunningACM
       ImportCluster
       exit 0
@@ -223,7 +237,7 @@ ReadCommand() #command
       exit 0
       ;;
     template) # Generate a template file for import or creation
-      SetOptions ":c:so:k:" "${ARGS}"
+      SetOptions ":c:so:" "${ARGS}"
       export CLUSTER_NAME
 
       if [ $SCRIPT_IMPORT_FILE = "/dev/stdout" ]; then
