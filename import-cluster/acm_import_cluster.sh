@@ -237,6 +237,7 @@ ShowKuberneteContext() #kubeconfig file (with --kubeconfig)
 ValidateIsClusterRunningACM()
 {
   ShowKuberneteContext "${HUB_KUBE_CONFIG}"
+  pwd
   ERRNO=$(oc get subs -n open-cluster-management advanced-cluster-management ${HUB_KUBE_CONFIG} > /dev/null 2>&1; echo $?)
   if [ $ERRNO -ne 0 ]; then
     Error "Cluster is not running Red Hat Advanced Cluster Management for Kubernetes" "Make sure the cluster your kubeconfig is pointing to is your cluster hub running ACM." 6
