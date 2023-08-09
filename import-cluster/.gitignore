@@ -1,4 +1,4 @@
 .DS_Store
 /managed_clusters/*.yaml
 /import_scripts/*.sh
-test.sh
+#test.sh
