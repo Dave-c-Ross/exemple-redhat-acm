@@ -179,8 +179,8 @@ ValidateOptions() #options
           Log "Info" "No KubeConfig file has been provided, when importing the remote cluster, the current context will be used"
         else
           if [ -f "$KUBE_CONFIG" ]; then
-            Log "Info" "TODO: We should validate KubeFile exist ...."
-            # echo $KUBE_CONFIG
+            pwd
+            echo $KUBE_CONFIG
             KUBE_CONFIG="--kubeconfig '${KUBE_CONFIG}'"
             # echo $KUBE_CONFIG
           else
@@ -195,8 +195,8 @@ ValidateOptions() #options
           Log "Info" "No KubeConfig file has been provided for hub cluster, when importing the remote cluster, the current context will be used"
         else
           if [ -f "$HUB_KUBE_CONFIG" ]; then
-            Log "Info" "TODO: We should validate Cluster Hub KubeFile exist ...."
-            # echo $HUB_KUBE_CONFIG
+            pwd
+            echo $HUB_KUBE_CONFIG
             HUB_KUBE_CONFIG="--kubeconfig '${HUB_KUBE_CONFIG}'"
             echo $HUB_KUBE_CONFIG
           else
