@@ -184,6 +184,7 @@ ValidateOptions() #options
             KUBE_CONFIG="--kubeconfig '${KUBE_CONFIG}'"
             # echo $KUBE_CONFIG
           else
+            pwd
             Error "VALIDATION ERROR" "The specified file in -k $KUBE_CONFIG does not exist."
           fi
         fi
@@ -199,6 +200,7 @@ ValidateOptions() #options
             HUB_KUBE_CONFIG="--kubeconfig '${HUB_KUBE_CONFIG}'"
             echo $HUB_KUBE_CONFIG
           else
+            pwd
             Error "VALIDATION ERROR" "The specified file in -h $HUB_KUBE_CONFIG does not exist."
           fi
         fi
