@@ -299,9 +299,9 @@ ImportCluster()
   ###
   ### Create ManagedCluster and KlusterletAddonConfig resources so ACM will wait for this cluster to reach out
   ###
-  Log "Info" "Create ${CLUSTER_NAME} ManagedCluster and KlusterletAddonConfig resources using ${MANAGED_CLUSTER_FILE} we are in $(pwd)..."
+  Log "Info" "Create ${CLUSTER_NAME} ManagedCluster and KlusterletAddonConfig resources using ${MANAGED_CLUSTER_FILE} we are in $(cat ${MANAGED_CLUSTER_FILE}s)..."
   oc apply -n ${CLUSTER_NAME} -f ${MANAGED_CLUSTER_FILE} ${HUB_KUBE_CONFIG}
-  cat ${MANAGED_CLUSTER_FILE}
+  
   ERRNO=$(oc apply -n ${CLUSTER_NAME} -f ${MANAGED_CLUSTER_FILE} ${HUB_KUBE_CONFIG} > /dev/null 2>&1; echo $?)
   if [ $ERRNO -ne 0 ]; then
     Log "Warning" "An error occured while creating the resources in your current cluster. It usually means the resources already exists. Let's try fething the data anyways."
