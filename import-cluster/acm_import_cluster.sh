@@ -301,6 +301,7 @@ ImportCluster()
   ###
   Log "Info" "Create ${CLUSTER_NAME} ManagedCluster and KlusterletAddonConfig resources using ${MANAGED_CLUSTER_FILE} ..."
   oc create -n ${CLUSTER_NAME} -f ${MANAGED_CLUSTER_FILE} ${HUB_KUBE_CONFIG}
+  cat ${MANAGED_CLUSTER_FILE}
   ERRNO=$(oc create -n ${CLUSTER_NAME} -f ${MANAGED_CLUSTER_FILE} ${HUB_KUBE_CONFIG} > /dev/null 2>&1; echo $?)
   if [ $ERRNO -ne 0 ]; then
     Log "Warning" "An error occured while creating the resources in your current cluster. It usually means the resources already exists. Let's try fething the data anyways."
