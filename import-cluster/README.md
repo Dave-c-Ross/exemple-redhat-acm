@@ -50,3 +50,6 @@ options:
 
 ```
 More to come ...
+
+## Known issues
+[ ] The kubeconfig files passed with -h and -k parameters need to be with no space in the path, I need to ajust the argument reading portion.

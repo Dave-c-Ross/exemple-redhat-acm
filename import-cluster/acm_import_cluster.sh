@@ -179,10 +179,7 @@ ValidateOptions() #options
           Log "Info" "No KubeConfig file has been provided, when importing the remote cluster, the current context will be used"
         else
           if [ -f "$KUBE_CONFIG" ]; then
-            #pwd
-            #echo $KUBE_CONFIG
             KUBE_CONFIG="--kubeconfig '${KUBE_CONFIG}'"
-            # echo $KUBE_CONFIG
           else
             pwd
             Error "VALIDATION ERROR" "The specified file in -k $KUBE_CONFIG does not exist."
@@ -198,7 +195,6 @@ ValidateOptions() #options
             HUB_KUBE_CONFIG="--kubeconfig ${HUB_KUBE_CONFIG}"
             oc get subs -n open-cluster-management advanced-cluster-management ${HUB_KUBE_CONFIG}
           else
-            pwd
             Error "VALIDATION ERROR" "The specified file in -h $HUB_KUBE_CONFIG does not exist."
           fi
         fi
@@ -220,8 +216,6 @@ ValidateOptions() #options
 
 ShowKuberneteContext() #kubeconfig file (with --kubeconfig)
 {
-  CCC=$(oc get subs -n open-cluster-management advanced-cluster-management ${HUB_KUBE_CONFIG})
-  echo "C $CCC"
   Log "Info" "oc config current-context $1"
   CURCONTX=$(oc config current-context $1)
   ERRNO=$(echo $?)
@@ -235,7 +229,6 @@ ShowKuberneteContext() #kubeconfig file (with --kubeconfig)
 ValidateIsClusterRunningACM()
 {
   ShowKuberneteContext "${HUB_KUBE_CONFIG}"
-  pwd
   ERRNO=$(oc get subs -n open-cluster-management advanced-cluster-management ${HUB_KUBE_CONFIG} > /dev/null 2>&1; echo $?)
   if [ $ERRNO -ne 0 ]; then
     Error "Cluster is not running Red Hat Advanced Cluster Management for Kubernetes" "Make sure the cluster your kubeconfig is pointing to is your cluster hub running ACM." 6
@@ -299,7 +292,7 @@ ImportCluster()
   ###
   ### Create ManagedCluster and KlusterletAddonConfig resources so ACM will wait for this cluster to reach out
   ###
-  Log "Info" "Create ${CLUSTER_NAME} ManagedCluster and KlusterletAddonConfig resources using ${MANAGED_CLUSTER_FILE} we are in $(cat ${MANAGED_CLUSTER_FILE}s)..."
+  Log "Info" "Create ${CLUSTER_NAME} ManagedCluster and KlusterletAddonConfig resources using ${MANAGED_CLUSTER_FILE} ..."
   oc apply -n ${CLUSTER_NAME} -f ${MANAGED_CLUSTER_FILE} ${HUB_KUBE_CONFIG}
   
   ERRNO=$(oc apply -n ${CLUSTER_NAME} -f ${MANAGED_CLUSTER_FILE} ${HUB_KUBE_CONFIG} > /dev/null 2>&1; echo $?)
