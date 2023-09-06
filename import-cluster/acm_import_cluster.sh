@@ -179,8 +179,8 @@ ValidateOptions() #options
           Log "Info" "No KubeConfig file has been provided, when importing the remote cluster, the current context will be used"
         else
           if [ -f "$KUBE_CONFIG" ]; then
-            pwd
-            echo $KUBE_CONFIG
+            #pwd
+            #echo $KUBE_CONFIG
             KUBE_CONFIG="--kubeconfig '${KUBE_CONFIG}'"
             # echo $KUBE_CONFIG
           else
@@ -195,10 +195,8 @@ ValidateOptions() #options
           Log "Info" "No KubeConfig file has been provided for hub cluster, when importing the remote cluster, the current context will be used"
         else
           if [ -f "$HUB_KUBE_CONFIG" ]; then
-            pwd
-            echo $HUB_KUBE_CONFIG
-            HUB_KUBE_CONFIG="--kubeconfig '${HUB_KUBE_CONFIG}'"
-            echo $HUB_KUBE_CONFIG
+            HUB_KUBE_CONFIG="--kubeconfig ${HUB_KUBE_CONFIG}"
+            oc get subs -n open-cluster-management advanced-cluster-management ${HUB_KUBE_CONFIG}
           else
             pwd
             Error "VALIDATION ERROR" "The specified file in -h $HUB_KUBE_CONFIG does not exist."
@@ -223,7 +221,7 @@ ValidateOptions() #options
 ShowKuberneteContext() #kubeconfig file (with --kubeconfig)
 {
   CCC=$(oc get subs -n open-cluster-management advanced-cluster-management ${HUB_KUBE_CONFIG})
-  echo $CCC
+  echo "C $CCC"
   Log "Info" "oc config current-context $1"
   CURCONTX=$(oc config current-context $1)
   ERRNO=$(echo $?)
